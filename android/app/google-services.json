@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "902895010395",
+    "firebase_url": "https://notifier-1be62-default-rtdb.firebaseio.com",
+    "project_id": "notifier-1be62",
+    "storage_bucket": "notifier-1be62.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:902895010395:android:4cdc898b1791e5d8c2757e",
+        "android_client_info": {
+          "package_name": "com.example.ical_mabite"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "902895010395-jf6eqj8tr7ej3eqm47pfjkdbbac3pjsu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ical_mabite",
+            "certificate_hash": "10a1797a29a5c2add8723b9885dea329885a7431"
+          }
+        },
+        {
+          "client_id": "902895010395-i2mr8l222tg3qnpfe94un0kgdd65ghu1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA36L4eKy0XI4JteSOidEVOuNPGJlF1VhQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "902895010395-0tjucot4l1g8p8si465m1bhvkqve1ct0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "902895010395-9ftujfibv20otl7nn3qcv63csguuu9f8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.icalMabite.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
