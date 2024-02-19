@@ -11,9 +11,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:logger/logger.dart';
+import 'package:fuzzy/fuzzy.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 Logger logger = Logger();
+List<String> names = ['Sofyan', 'Alois', 'Youssef', 'Hadrien'];
+String name = 'Temporaire';
 
 void flow(String token) async {
   await _signInWithGoogle();
@@ -24,6 +27,8 @@ void flow(String token) async {
 }
 
 void showNotification(String head, String body) async {
+  if (head.contains(name)) {return;}
+  
   const AndroidNotificationDetails androidPlatformChannelSpecifics =
       AndroidNotificationDetails('69', 'icalmabite',
           channelDescription: 'tounsgay',
@@ -118,11 +123,9 @@ Future<void> _backgroundHandler(RemoteMessage message) async {
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
 
-  showNotification(message.data.values.firstOrNull, message.data.values.lastOrNull);
-  if (kDebugMode) {
-    print(message.data);
-    print("bite");
-  }
+  showNotification(
+      message.data.values.firstOrNull, message.data.values.lastOrNull);
+  logger.i(message.data.toString());
 }
 
 class Notifier extends StatelessWidget {
@@ -177,6 +180,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String? fcmToken = '';
   bool logged = false || FirebaseAuth.instance.currentUser != null;
+  
+  final TextEditingController _textEditingController =  TextEditingController();
 
   @override
   void initState() {
@@ -278,10 +283,34 @@ class _HomePageState extends State<HomePage> {
               // wireframe for each widget.
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                const Center(child: AnimatedBorder()),
                 Center(
-                  child: Text(
-                      "Status: ${auth.currentUser != null ? "Connected" : "Disconnected"}"),
+                  child: Column(
+                    children: [
+                      const AnimatedBorder(),
+                      Text(
+                          "Status: ${auth.currentUser != null ? "Connected" : "Disconnected"}"),
+                      Text("Name: $name"),
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: TextField(
+                          controller: _textEditingController,
+                          decoration: const InputDecoration(
+                            labelText: "Name",
+                            hintText: "Enter one of the 4 names"
+                          ),
+                        ),
+                      ),
+                      TextButton(onPressed: () {
+                        String tname = _textEditingController.text;
+                        final fuse = Fuzzy(names);
+                        final result = fuse.search(tname);
+                        
+                        setState(() {
+                          name = result[0].item;
+                        });
+                      }, child: const Text('Submit Name'))
+                    ],
+                  ),
                 ),
               ],
             ),
