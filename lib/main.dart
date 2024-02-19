@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -31,8 +32,8 @@ void showNotification(String head, String body) async {
           ticker: 'ticker');
 
   const DarwinNotificationDetails iosPlatform = DarwinNotificationDetails();
-  const NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iosPlatform);
+  const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics, iOS: iosPlatform);
 
   await FlutterLocalNotificationsPlugin().show(
     0,
@@ -76,7 +77,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   const AndroidInitializationSettings initAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings("app_icon");
   const DarwinInitializationSettings initIos = DarwinInitializationSettings();
   const InitializationSettings inits =
       InitializationSettings(android: initAndroid, iOS: initIos);
@@ -106,7 +107,7 @@ void main() async {
   );
   FirebaseMessaging.onBackgroundMessage(_backgroundHandler);
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    showNotification("ok", message.data.values.firstOrNull);
+    _backgroundHandler(message);
   });
   runApp(const Notifier());
 }
@@ -117,7 +118,7 @@ Future<void> _backgroundHandler(RemoteMessage message) async {
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
 
-  showNotification("!", message.data.values.firstOrNull);
+  showNotification(message.data.values.firstOrNull, message.data.values.lastOrNull);
   if (kDebugMode) {
     print(message.data);
     print("bite");
@@ -261,7 +262,7 @@ class _HomePageState extends State<HomePage> {
         // in the middle of the parent.
         child: Stack(
           children: <Widget>[
-            const Column(
+            Column(
               // Column is also a layout widget. It takes a list of children and
               // arranges them vertically. By default, it sizes itself to fit its
               // children horizontally, and tries to be as tall as its parent.
@@ -277,11 +278,10 @@ class _HomePageState extends State<HomePage> {
               // wireframe for each widget.
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                const Center(child: AnimatedBorder()),
                 Center(
                   child: Text(
-                    "ICal Notifier",
-                    textAlign: TextAlign.center,
-                  ),
+                      "Status: ${auth.currentUser != null ? "Connected" : "Disconnected"}"),
                 ),
               ],
             ),
@@ -326,6 +326,58 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           )),
+    );
+  }
+}
+
+class AnimatedBorder extends StatefulWidget {
+  const AnimatedBorder({super.key});
+
+  @override
+  AnimatedBorderState createState() => AnimatedBorderState();
+}
+
+class AnimatedBorderState extends State<AnimatedBorder> {
+  double hue = 0;
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
+      setState(() {
+        hue = (hue + 1) % 360;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(seconds: 1),
+      padding: const EdgeInsets.all(10.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(
+          color: HSVColor.fromAHSV(1.0, hue, 1.0, 1.0).toColor(),
+          width: 3.5,
+        ),
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: const Text(
+        "ICal Notifier",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 32.0,
+        ),
+      ),
     );
   }
 }
