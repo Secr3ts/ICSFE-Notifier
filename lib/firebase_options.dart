@@ -71,7 +71,7 @@ class DefaultFirebaseOptions {
     databaseURL: 'https://notifier-1be62-default-rtdb.firebaseio.com',
     storageBucket: 'notifier-1be62.appspot.com',
     androidClientId: '902895010395-1dj3v4o6f5vobfj7kbd87bj3bm3vkrvh.apps.googleusercontent.com',
-    iosClientId: '902895010395-bd5rgfkcb59fbi3e3qcj2c73nc4co3eq.apps.googleusercontent.com',
+    iosClientId: '902895010395-ab9rrphfujhj6gsqiq657qkpuabvlphn.apps.googleusercontent.com',
     iosBundleId: 'com.example.icalMabite',
   );
 

@@ -1,19 +1,46 @@
+import 'dart:io';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:logger/logger.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
+Logger logger = Logger();
 
 void flow(String token) async {
   await _signInWithGoogle();
   // await sendToken(token);
-  await FirebaseMessaging.instance.subscribeToTopic("salles");
+  await FirebaseMessaging.instance
+      .subscribeToTopic("salles")
+      .then((value) => logger.d("Sub completed"));
+}
+
+void showNotification(String head, String body) async {
+  const AndroidNotificationDetails androidPlatformChannelSpecifics =
+      AndroidNotificationDetails('69', 'icalmabite',
+          channelDescription: 'tounsgay',
+          importance: Importance.max,
+          priority: Priority.high,
+          ticker: 'ticker');
+
+  const DarwinNotificationDetails iosPlatform = DarwinNotificationDetails();
+  const NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iosPlatform);
+
+  await FlutterLocalNotificationsPlugin().show(
+    0,
+    head,
+    body,
+    platformChannelSpecifics,
+    payload: 'item x',
+  );
 }
 
 sendToken(String token) async {
@@ -47,7 +74,16 @@ Future<UserCredential> _signInWithGoogle() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  const AndroidInitializationSettings initAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+  const DarwinInitializationSettings initIos = DarwinInitializationSettings();
+  const InitializationSettings inits =
+      InitializationSettings(android: initAndroid, iOS: initIos);
+  await FlutterLocalNotificationsPlugin().initialize(inits);
+
   await Firebase.initializeApp(
+    // name: 'App',
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await FirebaseAppCheck.instance.activate(
@@ -68,11 +104,28 @@ void main() async {
     // 4. App Attest provider with fallback to Device Check provider (App Attest provider is only available on iOS 14.0+, macOS 14.0+)
     appleProvider: AppleProvider.appAttest,
   );
-  runApp(const MyApp());
+  FirebaseMessaging.onBackgroundMessage(_backgroundHandler);
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    showNotification("ok", message.data.values.firstOrNull);
+  });
+  runApp(const Notifier());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+@pragma('vm:entry-point')
+Future<void> _backgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  await Firebase.initializeApp();
+
+  showNotification("!", message.data.values.firstOrNull);
+  if (kDebugMode) {
+    print(message.data);
+    print("bite");
+  }
+}
+
+class Notifier extends StatelessWidget {
+  const Notifier({super.key});
 
   // This widget is the root of your application.
   @override
@@ -97,13 +150,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'ICal'),
+      home: const HomePage(title: 'ICal'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -117,10 +170,10 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomePageState extends State<HomePage> {
   String? fcmToken = '';
   bool logged = false || FirebaseAuth.instance.currentUser != null;
 
@@ -132,16 +185,57 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     FirebaseMessaging.instance.onTokenRefresh
         .listen((fcmToken) => sendToken(fcmToken))
-        .onError((err) {if (kDebugMode) {print(err);}});
+        .onError((err) {
+      if (kDebugMode) {
+        print(err);
+      }
+    });
   }
 
   void getToken() async {
-    final notificationSettings =
-        await FirebaseMessaging.instance.requestPermission(provisional: true);
+    NotificationSettings settings =
+        await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus != AuthorizationStatus.authorized &&
+        settings.authorizationStatus != AuthorizationStatus.denied) {
+      getToken();
+    } else if (settings.authorizationStatus == AuthorizationStatus.denied) {
+      showSettingsDialog();
+    }
+
     final token = await FirebaseMessaging.instance.getToken();
     setState(() {
       fcmToken = token;
     });
+  }
+
+  Future<dynamic> showSettingsDialog() {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Application Settings'),
+          content: const Text(
+              'Please enable the required permissions in the application settings.'),
+          actions: [
+            TextButton(
+              child: const Text('Quit'),
+              onPressed: () {
+                exit(0);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -165,38 +259,47 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
           children: <Widget>[
-            Text(
-              "ICal ma BITE\n $fcmToken",
-              textAlign: TextAlign.center,
+            const Column(
+              // Column is also a layout widget. It takes a list of children and
+              // arranges them vertically. By default, it sizes itself to fit its
+              // children horizontally, and tries to be as tall as its parent.
+              //
+              // Column has various properties to control how it sizes itself and
+              // how it positions its children. Here we use mainAxisAlignment to
+              // center the children vertically; the main axis here is the vertical
+              // axis because Columns are vertical (the cross axis would be
+              // horizontal).
+              //
+              // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
+              // action in the IDE, or press "p" in the console), to see the
+              // wireframe for each widget.
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Center(
+                  child: Text(
+                    "ICal Notifier",
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
             ),
-            Visibility(
-              visible: logged,
-              child: TextButton(
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                    setState(
-                      () {
-                        logged = !logged;
-                      },
-                    );
-                  },
-                  child: const Text("Sign Out")),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Visibility(
+                visible: logged,
+                child: TextButton(
+                    onPressed: () async {
+                      await FirebaseAuth.instance.signOut();
+                      setState(
+                        () {
+                          logged = !logged;
+                        },
+                      );
+                    },
+                    child: const Text("Sign Out")),
+              ),
             )
           ],
         ),

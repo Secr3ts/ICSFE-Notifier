@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../Ical Parser"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "disabled",
+		"java.configuration.updateBuildConfiguration": "disabled"
+	}
+}

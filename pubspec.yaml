@@ -41,8 +41,11 @@ dependencies:
   google_sign_in: ^6.1.6
   firebase_app_check: ^0.2.1+8
   firebase_database: ^10.4.0
+  logger: ^2.0.2+1
+  flutter_local_notifications: ^16.3.2
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
   flutter_test:
     sdk: flutter
 
@@ -55,6 +58,13 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/app_ico.png"
+  min_sdk_android: 33
+  remove_alpha_ios: true
 
 # The following section is specific to Flutter packages.
 flutter:
