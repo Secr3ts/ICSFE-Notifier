@@ -9,6 +9,9 @@
 	],
 	"settings": {
 		"java.compile.nullAnalysis.mode": "disabled",
-		"java.configuration.updateBuildConfiguration": "disabled"
+		"java.configuration.updateBuildConfiguration": "disabled",
+		"files.exclude": {
+			"**/node_modules": true
+		}
 	}
 }
