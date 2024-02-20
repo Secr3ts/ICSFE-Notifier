@@ -288,7 +288,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       const AnimatedBorder(),
                       Text(
-                          "Status: ${auth.currentUser != null ? "Connected" : "Disconnected"}"),
+                          "Status: ${logged ? "Connected" : "Disconnected"}"),
                       Text("Name: $name"),
                       Padding(
                         padding: const EdgeInsets.all(20.0),

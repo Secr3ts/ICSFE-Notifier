@@ -8,20 +8,12 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:902895010395:android:4cdc898b1791e5d8c2757e",
+        "mobilesdk_app_id": "1:902895010395:android:38a9e02d7ce0b2f8c2757e",
         "android_client_info": {
-          "package_name": "com.example.ical_mabite"
+          "package_name": "com.mphkft.icalnotifier"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "902895010395-jf6eqj8tr7ej3eqm47pfjkdbbac3pjsu.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.ical_mabite",
-            "certificate_hash": "10a1797a29a5c2add8723b9885dea329885a7431"
-          }
-        },
         {
           "client_id": "902895010395-i2mr8l222tg3qnpfe94un0kgdd65ghu1.apps.googleusercontent.com",
           "client_type": 3

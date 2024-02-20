@@ -17,15 +17,24 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -43,47 +52,12 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBWkbwqditHzoucy9SGAEGqscuZ31rFRcM',
-    appId: '1:902895010395:web:5f344ca68b1b3fd7c2757e',
-    messagingSenderId: '902895010395',
-    projectId: 'notifier-1be62',
-    authDomain: 'notifier-1be62.firebaseapp.com',
-    databaseURL: 'https://notifier-1be62-default-rtdb.firebaseio.com',
-    storageBucket: 'notifier-1be62.appspot.com',
-    measurementId: 'G-JM2N2CZ6ZE',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyA36L4eKy0XI4JteSOidEVOuNPGJlF1VhQ',
-    appId: '1:902895010395:android:4cdc898b1791e5d8c2757e',
+    appId: '1:902895010395:android:38a9e02d7ce0b2f8c2757e',
     messagingSenderId: '902895010395',
     projectId: 'notifier-1be62',
     databaseURL: 'https://notifier-1be62-default-rtdb.firebaseio.com',
     storageBucket: 'notifier-1be62.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBmqbnXddfXVsF41y_JQKzmgEWIYFT0o1s',
-    appId: '1:902895010395:ios:a6571358e08f1d4cc2757e',
-    messagingSenderId: '902895010395',
-    projectId: 'notifier-1be62',
-    databaseURL: 'https://notifier-1be62-default-rtdb.firebaseio.com',
-    storageBucket: 'notifier-1be62.appspot.com',
-    androidClientId: '902895010395-1dj3v4o6f5vobfj7kbd87bj3bm3vkrvh.apps.googleusercontent.com',
-    iosClientId: '902895010395-ab9rrphfujhj6gsqiq657qkpuabvlphn.apps.googleusercontent.com',
-    iosBundleId: 'com.example.icalMabite',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBmqbnXddfXVsF41y_JQKzmgEWIYFT0o1s',
-    appId: '1:902895010395:ios:4465f27209e80692c2757e',
-    messagingSenderId: '902895010395',
-    projectId: 'notifier-1be62',
-    databaseURL: 'https://notifier-1be62-default-rtdb.firebaseio.com',
-    storageBucket: 'notifier-1be62.appspot.com',
-    androidClientId: '902895010395-1dj3v4o6f5vobfj7kbd87bj3bm3vkrvh.apps.googleusercontent.com',
-    iosClientId: '902895010395-9ftujfibv20otl7nn3qcv63csguuu9f8.apps.googleusercontent.com',
-    iosBundleId: 'com.example.icalMabite.RunnerTests',
   );
 }
